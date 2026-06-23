@@ -1,3 +1,61 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* Neutral palette as RGB channels. Brand/accent colors live in the config. */
+  :root {
+    --c-page: 243 250 255;
+    --c-card: 255 255 255;
+    --c-ink: 7 30 39;
+    --c-muted: 109 122 119;
+    --c-subtle: 61 73 71;
+    --c-input: 219 241 254;
+    --c-surface: 230 246 255;
+    --c-card-border: 207 230 242;
+  }
+
+  .dark {
+    --c-page: 9 17 20;
+    --c-card: 19 31 36;
+    --c-ink: 230 238 240;
+    --c-muted: 138 158 158;
+    --c-subtle: 176 192 192;
+    --c-input: 28 46 53;
+    --c-surface: 22 37 43;
+    --c-card-border: 38 54 61;
+  }
+
+  body {
+    background-color: rgb(var(--c-page));
+  }
+
+  /* Toast entrance */
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateX(1rem);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .toast-enter {
+    animation: toast-in 0.2s ease-out;
+  }
+}
+
+@layer base {
+  /* Consistent custom dropdown chevron with comfortable right spacing.
+     Pair with `pr-10` on the select so text never sits under the chevron. */
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='16'%20height='16'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%236d7a77'%20stroke-width='2.5'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpolyline%20points='6%209%2012%2015%2018%209'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.9rem center;
+    background-size: 1rem 1rem;
+  }
+}
