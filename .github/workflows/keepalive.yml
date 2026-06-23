@@ -1,0 +1,50 @@
+name: Supabase keep-alive
+
+# Free-tier Supabase projects auto-pause after ~7 days of inactivity.
+# This runs a small daily request (auth + one DB query) so the project
+# stays active. Also runnable manually from the Actions tab.
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # every day at 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sign in and run a query to keep the project active
+        env:
+          URL: ${{ vars.SUPABASE_URL }}
+          ANON: ${{ vars.SUPABASE_ANON_KEY }}
+          EMAIL: ${{ vars.DEMO_EMAIL }}
+          PASSWORD: ${{ secrets.DEMO_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          # 1) Exercise the auth server (GoTrue) with a real login.
+          token=$(curl -fsS -X POST "$URL/auth/v1/token?grant_type=password" \
+            -H "apikey: $ANON" \
+            -H "Content-Type: application/json" \
+            -d "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\"}" \
+            | python3 -c "import sys,json;print(json.load(sys.stdin).get('access_token',''))")
+
+          if [ -z "$token" ]; then
+            echo "::error::Login failed - could not obtain an access token."
+            exit 1
+          fi
+          echo "Auth OK."
+
+          # 2) Run a real query against Postgres (this is the DB activity that
+          #    resets the inactivity timer).
+          code=$(curl -fsS -o /dev/null -w '%{http_code}' \
+            "$URL/rest/v1/appointments?select=id&limit=1" \
+            -H "apikey: $ANON" \
+            -H "Authorization: Bearer $token")
+          echo "Database query returned HTTP $code."
+
+          if [ "$code" != "200" ]; then
+            echo "::error::Unexpected status from the database query."
+            exit 1
+          fi
+          echo "Keep-alive succeeded."
