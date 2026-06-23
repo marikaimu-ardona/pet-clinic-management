@@ -30,3 +30,6 @@ dist-ssr
 
 # Local archive (not for repo)
 Archive.zip
+
+# Local screenshot/capture script (contains local paths + demo creds)
+_capture.mjs
