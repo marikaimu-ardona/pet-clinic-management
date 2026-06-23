@@ -31,5 +31,6 @@ dist-ssr
 # Local archive (not for repo)
 Archive.zip
 
-# Local screenshot/capture script (contains local paths + demo creds)
+# Local helper scripts (contain local paths + demo creds, not for repo)
 _capture.mjs
+_seed_appts.py
